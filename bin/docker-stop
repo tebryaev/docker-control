@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <container_name|all>"
+    exit 1
+fi
+
+if [ "$1" == "all" ]; then
+    # Stop all running containers
+    docker stop $(docker ps -q)
+    echo "All containers have been stopped."
+else
+    CONTAINER_NAME=$1
+    CONTAINER_ID=$(docker ps -q -f name=$CONTAINER_NAME)
+
+    # Check if the container is running
+    if [ -z "$CONTAINER_ID" ]; then
+        echo "Container $CONTAINER_NAME is not running."
+        exit 1
+    fi
+
+    # Stop the specified container
+    docker stop $CONTAINER_ID
+    echo "Container $CONTAINER_NAME has been stopped."
+fi

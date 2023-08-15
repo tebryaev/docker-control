@@ -1,0 +1,22 @@
+#!/bin/bash
+
+CONTAINER_NAME=$1
+
+# Check if a container name is provided
+if [ -z "$CONTAINER_NAME" ]; then
+    echo "Usage: $0 <container_name>"
+    exit 1
+fi
+
+# Fetch the container ID and its status
+CONTAINER_ID=$(docker ps -aq -f name=$CONTAINER_NAME)
+CONTAINER_STATUS=$(docker inspect --format '{{.State.Running}}' $CONTAINER_ID 2>/dev/null)
+
+# Check if the container exists and is running
+if [ -z "$CONTAINER_ID" ] || [ "$CONTAINER_STATUS" != "true" ]; then
+    echo "Container $CONTAINER_NAME not found or not running."
+    exit 1
+fi
+
+# Execute the appropriate shell inside the container
+docker exec -it $CONTAINER_ID sh -c 'bash || sh'
