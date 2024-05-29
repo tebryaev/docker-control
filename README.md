@@ -1,18 +1,18 @@
 # Docker Control Scripts
 
-This repository provides utility scripts to simplify managing Docker containers. They're especially useful if you frequently need to stop containers or enter their environments.
+This repository provides utility scripts to simplify the management of Docker containers. These scripts are particularly useful if you frequently need to stop containers or enter their environments.
 
 ## Scripts
 
 ### docker-stop
 
-Stops a specified Docker container by its name or all currently running containers.
+This script stops a specified Docker container by its name or ID, or all currently running containers.
 
 **Usage**:
 
 - To stop a specific container:
     ```bash
-    docker-stop <container_name>
+    docker-stop <container_name_or_id>
     ```
 
     Example:
@@ -29,13 +29,13 @@ Stops a specified Docker container by its name or all currently running containe
 
 ### docker-enter
 
-Enters (or executes a shell within) a specific Docker container.
+This script enters (or executes a shell within) a specific Docker container by its name or ID.
 
 **Usage**:
 
 - To enter a container:
     ```bash
-    docker-enter <container_name>
+    docker-enter <container_name_or_id>
     ```
 
     Example:
@@ -59,7 +59,7 @@ Enters (or executes a shell within) a specific Docker container.
 
 3. Use the Makefile to install the scripts globally:
     ```bash
-    make install
+    sudo make install
     ```
 
 This will copy the scripts from the `./bin/` directory to `/usr/local/bin` and give them execution permissions, making them globally accessible from any location in the terminal.

@@ -11,7 +11,12 @@ if [ "$1" == "all" ]; then
     echo "All containers have been stopped."
 else
     CONTAINER_NAME=$1
-    CONTAINER_ID=$(docker ps -q -f name=$CONTAINER_NAME)
+    CONTAINER_ID=$(docker ps -q -f ancestor=$CONTAINER_NAME)
+
+    # If no container was found, try searching by ID
+    if [ -z "$CONTAINER_ID" ]; then
+        CONTAINER_ID=$(docker ps -q -f id=$CONTAINER_NAME)
+    fi
 
     # Check if the container is running
     if [ -z "$CONTAINER_ID" ]; then

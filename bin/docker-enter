@@ -9,7 +9,13 @@ if [ -z "$CONTAINER_NAME" ]; then
 fi
 
 # Fetch the container ID and its status
-CONTAINER_ID=$(docker ps -aq -f name=$CONTAINER_NAME)
+CONTAINER_ID=$(docker ps -aq -f ancestor=$CONTAINER_NAME)
+
+# If no container was found, try searching by ID
+if [ -z "$CONTAINER_ID" ]; then
+    CONTAINER_ID=$(docker ps -aq -f id=$CONTAINER_NAME)
+fi
+
 CONTAINER_STATUS=$(docker inspect --format '{{.State.Running}}' $CONTAINER_ID 2>/dev/null)
 
 # Check if the container exists and is running
@@ -18,5 +24,10 @@ if [ -z "$CONTAINER_ID" ] || [ "$CONTAINER_STATUS" != "true" ]; then
     exit 1
 fi
 
-# Execute the appropriate shell inside the container
-docker exec -it $CONTAINER_ID sh -c 'bash || sh'
+# Try to execute /bin/bash inside the container
+if docker exec -it $CONTAINER_ID /bin/bash; then
+    exit 0
+fi
+
+# If /bin/bash does not exist, execute /bin/sh
+docker exec -it $CONTAINER_ID /bin/sh
