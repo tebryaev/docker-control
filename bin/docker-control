@@ -33,6 +33,14 @@ stop_container() {
     done
 }
 
+# Function to stop all containers
+stop_all_containers() {
+    if whiptail --title "Confirmation" --yesno "Are you sure you want to stop all containers?" 8 45; then
+        docker stop $(docker ps -q)
+        whiptail --title "Success" --msgbox "All containers have been stopped." 8 45
+    fi
+}
+
 while true; do
     # Get the list of all running containers
     CONTAINERS=$(docker ps --format "{{.ID}} {{.Names}} {{.Image}}")
@@ -53,7 +61,7 @@ while true; do
     done <<< "$CONTAINERS"
 
     # Display the menu with the list of containers and action options
-    CHOICE=$(whiptail --title "Choose an action" --menu "Container list:" 20 $(tput cols) 10 "${OPTIONS[@]}" "STOP" "Stop a container" 3>&1 1>&2 2>&3)
+    CHOICE=$(whiptail --title "Choose an action" --menu "Container list:" 20 $(tput cols) 10 "${OPTIONS[@]}" "STOP" "Stop a container" "STOP ALL" "Stop all containers" 3>&1 1>&2 2>&3)
 
     # If the user cancels the selection, exit
     if [ $? -ne 0 ]; then
@@ -63,6 +71,9 @@ while true; do
     # If the user chooses to stop a container
     if [ "$CHOICE" == "STOP" ]; then
         stop_container
+        continue
+    elif [ "$CHOICE" == "STOP ALL" ]; then
+        stop_all_containers
         continue
     fi
 
