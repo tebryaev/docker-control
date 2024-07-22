@@ -21,17 +21,15 @@ stop_container() {
             OPTIONS+=($CONTAINER_ID "$CONTAINER_NAME ($CONTAINER_IMAGE)")
         done <<< "$CONTAINERS"
 
-        STOP_CHOICE=$(whiptail --title "Choose a container to stop" --menu "Container list:" 20 78 10 "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
-        
+        STOP_CHOICE=$(whiptail --title "Choose a container to stop" --menu "Container list:" 20 $(tput cols) 10 "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+
         if [ $? -ne 0 ]; then
             return
         fi
 
         # Stop the selected container
-        STOP_COMMAND="docker stop $STOP_CHOICE"
-        echo $STOP_COMMAND
-        eval $STOP_COMMAND
-        whiptail --title "Success" --msgbox "Container $STOP_CHOICE has been stopped." 8 45
+        docker stop $STOP_CHOICE
+        whiptail --title "Success" --msgbox "Container $STOP_CHOICE has been stopped." 8 $(tput cols)
     done
 }
 
@@ -55,7 +53,7 @@ while true; do
     done <<< "$CONTAINERS"
 
     # Display the menu with the list of containers and action options
-    CHOICE=$(whiptail --title "Choose an action" --menu "Container list:" 20 78 10 "${OPTIONS[@]}" "STOP" "Stop a container" 3>&1 1>&2 2>&3)
+    CHOICE=$(whiptail --title "Choose an action" --menu "Container list:" 20 $(tput cols) 10 "${OPTIONS[@]}" "STOP" "Stop a container" 3>&1 1>&2 2>&3)
 
     # If the user cancels the selection, exit
     if [ $? -ne 0 ]; then
@@ -73,7 +71,7 @@ while true; do
 
     # Check if the container exists and is running
     if [ -z "$CHOICE" ] || [ "$CONTAINER_STATUS" != "true" ]; then
-        whiptail --title "Error" --msgbox "Container not found or not running." 8 45
+        whiptail --title "Error" --msgbox "Container not found or not running." 8 $(tput cols)
         exit 1
     fi
 
