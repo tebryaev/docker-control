@@ -8,9 +8,9 @@ help:
 	@echo "  make help    - display this help message"
 
 install:
-	@echo "Copying files from ./bin/ to /usr/local/bin/"
+	@echo "Copying files from ./bin/ to /usr/bin/"
 	@for file in ./bin/*; do \
-		cp $$file /usr/local/bin/; \
-		chmod +x /usr/local/bin/`basename $$file`; \
+		cp $$file /usr/bin/; \
+		chmod +x /usr/bin/`basename $$file`; \
 	done
 	@echo "Installation completed."
