@@ -1,49 +1,19 @@
-# Docker Control Scripts
+# Docker Control Script with UI
 
-This repository provides utility scripts to simplify the management of Docker containers. These scripts are particularly useful if you frequently need to stop containers or enter their environments.
+This repository hosts a Docker control script featuring a user interface to simplify the management of Docker containers. This script is particularly useful for stopping containers or entering their environments through a graphical user interface, making it more accessible for those who prefer not to use command-line tools directly.
 
-## Scripts
+## Features
 
-### docker-stop
+- **Graphical User Interface**: Provides an easy-to-use interface for managing Docker containers.
+- **Stop Containers**: Allows users to stop a specified Docker container by selecting it from a list.
+- **Enter Containers**: Enables users to enter (or execute a shell within) a specific Docker container by selecting it from a list.
 
-This script stops a specified Docker container by its name or ID, or all currently running containers.
+## Dependencies
 
-**Usage**:
+To use this script, you must have the following installed:
 
-- To stop a specific container:
-    ```bash
-    docker-stop <container_name_or_id>
-    ```
-
-    Example:
-    ```bash
-    docker-stop my_container
-    ```
-
-- To stop all running containers:
-    ```bash
-    docker-stop all
-    ```
-
-**Note**: If the specified container isn't running, the script will inform you of this.
-
-### docker-enter
-
-This script enters (or executes a shell within) a specific Docker container by its name or ID.
-
-**Usage**:
-
-- To enter a container:
-    ```bash
-    docker-enter <container_name_or_id>
-    ```
-
-    Example:
-    ```bash
-    docker-enter my_container
-    ```
-
-**Note**: If the container isn't found or isn't running, the script will inform you of this.
+- Docker
+- Whiptail (for the graphical interface)
 
 ## Installation
 
@@ -57,9 +27,19 @@ This script enters (or executes a shell within) a specific Docker container by i
     cd docker-control
     ```
 
-3. Use the Makefile to install the scripts globally:
+3. Ensure Docker and Whiptail are installed on your system. If not, install them using your distribution's package manager.
+
+4. Use the Makefile to install the script globally:
     ```bash
     sudo make install
     ```
 
-This will copy the scripts from the `./bin/` directory to `/usr/local/bin` and give them execution permissions, making them globally accessible from any location in the terminal.
+This will copy the script from the `./bin/` directory to `/usr/local/bin` and give it execution permissions, making it globally accessible from any location in the terminal.
+
+## Usage
+
+After installation, you can run the script by executing:
+
+```bash
+docker-control
+```

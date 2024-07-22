@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Function to stop a container
+stop_container() {
+    while true; do
+        # Refresh the list of containers
+        CONTAINERS=$(docker ps --format "{{.ID}} {{.Names}} {{.Image}}")
+
+        # If no running containers are found, display a message and return
+        if [ -z "$CONTAINERS" ]; then
+            whiptail --title "Error" --msgbox "No running containers found." 8 45
+            return
+        fi
+
+        # Prepare options array for whiptail
+        OPTIONS=()
+        while read -r line; do
+            CONTAINER_ID=$(echo $line | awk '{print $1}')
+            CONTAINER_NAME=$(echo $line | awk '{print $2}')
+            CONTAINER_IMAGE=$(echo $line | awk '{print $3}')
+            OPTIONS+=($CONTAINER_ID "$CONTAINER_NAME ($CONTAINER_IMAGE)")
+        done <<< "$CONTAINERS"
+
+        STOP_CHOICE=$(whiptail --title "Choose a container to stop" --menu "Container list:" 20 78 10 "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+        
+        if [ $? -ne 0 ]; then
+            return
+        fi
+
+        # Stop the selected container
+        STOP_COMMAND="docker stop $STOP_CHOICE"
+        echo $STOP_COMMAND
+        eval $STOP_COMMAND
+        whiptail --title "Success" --msgbox "Container $STOP_CHOICE has been stopped." 8 45
+    done
+}
+
+while true; do
+    # Get the list of all running containers
+    CONTAINERS=$(docker ps --format "{{.ID}} {{.Names}} {{.Image}}")
+
+    # If no running containers are found, display a message and exit
+    if [ -z "$CONTAINERS" ]; then
+        whiptail --title "Error" --msgbox "No running containers found." 8 45
+        exit 1
+    fi
+
+    # Prepare options array for whiptail
+    OPTIONS=()
+    while read -r line; do
+        CONTAINER_ID=$(echo $line | awk '{print $1}')
+        CONTAINER_NAME=$(echo $line | awk '{print $2}')
+        CONTAINER_IMAGE=$(echo $line | awk '{print $3}')
+        OPTIONS+=($CONTAINER_ID "$CONTAINER_NAME ($CONTAINER_IMAGE)")
+    done <<< "$CONTAINERS"
+
+    # Display the menu with the list of containers and action options
+    CHOICE=$(whiptail --title "Choose an action" --menu "Container list:" 20 78 10 "${OPTIONS[@]}" "STOP" "Stop a container" 3>&1 1>&2 2>&3)
+
+    # If the user cancels the selection, exit
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+
+    # If the user chooses to stop a container
+    if [ "$CHOICE" == "STOP" ]; then
+        stop_container
+        continue
+    fi
+
+    # Get the status of the selected container
+    CONTAINER_STATUS=$(docker inspect --format '{{.State.Running}}' $CHOICE 2>/dev/null)
+
+    # Check if the container exists and is running
+    if [ -z "$CHOICE" ] || [ "$CONTAINER_STATUS" != "true" ]; then
+        whiptail --title "Error" --msgbox "Container not found or not running." 8 45
+        exit 1
+    fi
+
+    # Try to execute /bin/bash inside the container
+    if docker exec -it $CHOICE /bin/bash; then
+        exit 0
+    fi
+
+    # If /bin/bash does not exist, execute /bin/sh
+    docker exec -it $CHOICE /bin/sh
+    exit 0
+done
